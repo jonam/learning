@@ -5,7 +5,7 @@ A structured approach to deepen your knowledge in network programming, driver de
 Given your outlined objectives, you might find the following learning path helpful:
 
 #### 1. **Networking Concepts:**
-   a. **Networking Basics:** Review basics like OSI Model, TCP/IP Model, IP addressing, Subnetting, VLANs.
+   a. **Networking Basics:** Review basics like TCP/IP Model, IP addressing, Subnetting, VLANs.
    b. **Networking Protocols:** Deep dive into TCP/IP, UDP, and other relevant networking protocols.
 
 #### 2. **Linux Networking:**
