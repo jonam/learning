@@ -1,4 +1,4 @@
-Absolutely! A subnet, or subnetwork, is essentially a division of an IP network. The practice of dividing a network into two or more networks is called subnetting. Subnets are primarily used to manage network complexity, isolate network traffic, and enhance security.
+A subnet, or subnetwork, is essentially a division of an IP network. The practice of dividing a network into two or more networks is called subnetting. Subnets are primarily used to manage network complexity, isolate network traffic, and enhance security.
 
 ### Basic Concept:
 - **IP Address:** Every device on a network is assigned a unique IP address, which is a set of numbers used to identify a device on the network. 
