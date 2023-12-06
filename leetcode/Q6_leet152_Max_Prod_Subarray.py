@@ -1,4 +1,12 @@
 
+# Adjacent numbers multipled can become alternative -ve or +ve
+# depending upon odd number or even number of negative numbers
+# And hence curMax may become curMin just with a negative sign
+# and vice versa. So we use dynamic programming here.
+# Also special case if all are positive, we just multiply all of them
+# Another special case is if a number is 0, then we reset curMin and curMax 
+# to be 1.
+
 # https://www.youtube.com/watch?v=lXVy6YWFcRM
 def max_prod_subarray(mylist : list[int]) -> int:
     res = max(mylist)
