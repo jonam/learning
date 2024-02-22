@@ -1,0 +1,5 @@
+*.pth
+*.pyc
+*.log
+gym-env/
+ai_utils/src/RL/policy_gradient/trading/data/
