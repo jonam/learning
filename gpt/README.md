@@ -56,7 +56,7 @@ def estimate_loss():
 
 When you're ready to train your model again, you should switch it back to training mode by calling `model.train()`. This re-enables dropout and batch normalization layers to behave accordingly during the training process.
 
-In the context of the `estimate_loss` function you've described, the use of `model.eval()` at the beginning and `model.train()` at the end serves specific purposes during the process of estimating the loss on different data splits (e.g., training and validation sets). Here's a breakdown of why this pattern is used:
+In the context of the `estimate_loss` function we've described, the use of `model.eval()` at the beginning and `model.train()` at the end serves specific purposes during the process of estimating the loss on different data splits (e.g., training and validation sets). Here's a breakdown of why this pattern is used:
 
 1. **Purpose of `model.eval()`**: When you call `model.eval()`, you are instructing the model to prepare for evaluation or inference instead of training. This has two main effects:
     - It disables dropout, ensuring that all neurons are used in the network, which is essential for consistency in the output predictions during evaluation.
@@ -116,7 +116,7 @@ The calculation of raw output scores in a neural network involves propagating th
 
 The parameters of a neural network include all the trainable weights and biases across all its layers. These parameters are initially set randomly or through some initialization method and then iteratively updated during training via backpropagation to minimize the loss function.
 
-The calculation of the total number of parameters in a model, as shown in your Python snippet, is done by iterating through all the parameters of the model, counting the number of elements (e.g., weights or biases) in each parameter, and summing these counts. Here's a breakdown of the code snippet:
+The calculation of the total number of parameters in a model, as shown in our Python snippet, is done by iterating through all the parameters of the model, counting the number of elements (e.g., weights or biases) in each parameter, and summing these counts. Here's a breakdown of the code snippet:
 
 ```python
 print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters')
@@ -263,7 +263,7 @@ lm_head.bias torch.Size([65])
 0.208193 M parameters
 ```
 
-To calculate the total number of parameters from the sizes of weight and bias tensors you've listed, you would multiply the dimensions of each tensor to get the number of elements (parameters) in each and then sum all these numbers up. Each dimension in the tensor size represents a different axis in the tensor, and the product of these dimensions gives the total number of parameters for that tensor. Let's calculate the total number of parameters for each layer and then sum them up to get the total.
+To calculate the total number of parameters from the sizes of weight and bias tensors we've listed, you would multiply the dimensions of each tensor to get the number of elements (parameters) in each and then sum all these numbers up. Each dimension in the tensor size represents a different axis in the tensor, and the product of these dimensions gives the total number of parameters for that tensor. Let's calculate the total number of parameters for each layer and then sum them up to get the total.
 
 For readability and simplicity, I'll show the calculation for a few tensors, then sum up the rest similarly.
 
@@ -348,7 +348,7 @@ In summary, these components work together within each block of a transformer mo
 ## So how many layers are present based on the data I provided. Are there only 2 layers?
 
 
-The information you provided describes a model with a structure that includes multiple repeating blocks, each containing several components. The number of layers within the entire model cannot be deduced to just "2 layers" based on the description of the feedforward network alone. Instead, the model's architecture, as described, is more complex and includes multiple types of layers and components. Let's break down the structure based on the details provided:
+The information we provided describes a model with a structure that includes multiple repeating blocks, each containing several components. The number of layers within the entire model cannot be deduced to just "2 layers" based on the description of the feedforward network alone. Instead, the model's architecture, as described, is more complex and includes multiple types of layers and components. Let's break down the structure based on the details provided:
 
 1. **Token and Position Embedding Tables**: These are not typically counted as "layers" in the same way as linear or convolutional layers but are essential components for input processing.
 
@@ -479,7 +479,7 @@ As per this code, the self.key and self.query both should be identical.
 Since the RHS is the same. So what is so special or different about query and key.
 As a matter of fact, even the value is the same. I don't  really understand this.
 
-The code snippet you've shared defines a single attention head within a transformer model, with separate linear transformations for keys, queries, and values, all of which indeed have the same dimensions (`n_embd` to `head_size`) and are created without biases. At first glance, it might seem redundant or confusing that these transformations are defined in seemingly identical ways. However, the distinction and purpose of these components are crucial in the attention mechanism, and their separation is intentional and meaningful.
+The code snippet we've shared defines a single attention head within a transformer model, with separate linear transformations for keys, queries, and values, all of which indeed have the same dimensions (`n_embd` to `head_size`) and are created without biases. At first glance, it might seem redundant or confusing that these transformations are defined in seemingly identical ways. However, the distinction and purpose of these components are crucial in the attention mechanism, and their separation is intentional and meaningful.
 
 ### Why Separate Linear Layers for Keys, Queries, and Values?
 
@@ -512,7 +512,7 @@ q = self.query(x) # (B,T,C)
 
 As far as I know self.key and self.query are tensors. Why are we passing a parameter x to it?
 
-In the context of the code snippet you've provided, `self.key` and `self.query` are not raw tensors but instances of PyTorch's `nn.Linear` layer. When you define a layer like `nn.Linear` in PyTorch, you're creating a module capable of performing a linear transformation on its input. This means `self.key` and `self.query` are both callable objects that, when called with an input tensor `x`, apply a learned linear transformation to `x`.
+In the context of the code snippet we've provided, `self.key` and `self.query` are not raw tensors but instances of PyTorch's `nn.Linear` layer. When you define a layer like `nn.Linear` in PyTorch, you're creating a module capable of performing a linear transformation on its input. This means `self.key` and `self.query` are both callable objects that, when called with an input tensor `x`, apply a learned linear transformation to `x`.
 
 Here's a breakdown of what's happening in the code:
 
@@ -690,7 +690,7 @@ q = self.query(x) # (B,T,C)
 
 they will get different treatment?
 
-Let's clarify the process: the operations in the code snippet you provided don't directly modify the weights of the `self.key`, `self.query`, or `self.value` layers. Instead, these operations use the transformed `k`, `q`, and `v` to compute attention and aggregate information. The differentiation in how `k`, `q`, and `v` are used leads to different gradients being backpropagated through these layers during training, which in turn modifies their weights differently.
+Let's clarify the process: the operations in the code snippet we provided don't directly modify the weights of the `self.key`, `self.query`, or `self.value` layers. Instead, these operations use the transformed `k`, `q`, and `v` to compute attention and aggregate information. The differentiation in how `k`, `q`, and `v` are used leads to different gradients being backpropagated through these layers during training, which in turn modifies their weights differently.
 
 ### How the Weights Get Modified
 
@@ -763,7 +763,7 @@ This is because we are doing a dot product of each query with all keys.
 
 And so on. Is that right?
 
-Yes, you're correct in identifying the operation `q @ k.transpose(-2, -1) * C**-0.5` as the crucial, non-symmetric step that differentiates the roles of queries (`q`) and keys (`k`) within the attention mechanism. This step computes the dot product of each query vector with all key vectors, which is fundamental to determining the attention scores. Let's dive a bit deeper into this:
+Yes, we're correct in identifying the operation `q @ k.transpose(-2, -1) * C**-0.5` as the crucial, non-symmetric step that differentiates the roles of queries (`q`) and keys (`k`) within the attention mechanism. This step computes the dot product of each query vector with all key vectors, which is fundamental to determining the attention scores. Let's dive a bit deeper into this:
 
 ### Attention Score Computation
 
@@ -946,7 +946,7 @@ OR
 
 Does an addition operation make sense here?
 
-The addition of token embeddings (`tok_emb`) and positional embeddings (`pos_emb`) in transformer models, including the one described by Andrej Karpathy, is a critical step that combines the semantic information of each token with information about its position in the sequence. This process ensures that the model can understand both the meaning of each word and how the order of words affects the meaning of the sentence. Let's address your concerns and the rationale behind this approach:
+The addition of token embeddings (`tok_emb`) and positional embeddings (`pos_emb`) in transformer models, including the one described by Andrej Karpathy, is a critical step that combines the semantic information of each token with information about its position in the sequence. This process ensures that the model can understand both the meaning of each word and how the order of words affects the meaning of the sentence. Let's address the concerns and the rationale behind this approach:
 
 ### Why Add Positional and Token Embeddings?
 
