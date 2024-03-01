@@ -967,3 +967,100 @@ Your concern about potential ambiguity from the addition operation (e.g., differ
 ### Summary
 
 The addition of token and positional embeddings is a foundational technique in transformer models to ensure that both the semantic content of tokens and their sequential position are considered. Despite the theoretical possibility of ambiguity, the practical implementation in high-dimensional spaces, combined with the model's capacity to learn distinctive representations, effectively addresses this concern. The success of transformer models in a wide range of language tasks underscores the effectiveness of this approach.
+
+## Explain wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) # (B, T, T)
+
+This line is a crucial step in implementing a specific type of attention mechanism, often called "masked" or "causal" attention, within transformer models. The purpose of this operation is to prevent the model from attending to future tokens in the sequence during each prediction step, enforcing a directional (or causal) information flow that mirrors how we process sequences in natural language (i.e., left to right). Let's break down what this line does:
+
+### Understanding the Components
+
+- **`wei`**: This variable represents the matrix of attention scores before applying the mask. The shape `[B, T, T]` indicates a batch of attention score matrices, where each element `wei[b, i, j]` represents the attention score from the `i`-th token to the `j`-th token in the `b`-th sequence in the batch.
+
+- **`self.tril`**: This is a lower triangular matrix (as indicated by `torch.tril`), where all elements above the main diagonal are zeros, and all elements on and below the diagonal are ones. This matrix is used as a template to create the mask. The operation `self.tril[:T, :T]` adjusts the size of this matrix to match the current sequence length `T`.
+
+- **`masked_fill`**: This method takes a condition and a value (`float('-inf')` in this case) and replaces elements in `wei` where the condition is true with the given value. The condition here is `self.tril[:T, :T] == 0`, which identifies elements above the main diagonal (i.e., positions that correspond to "future" tokens in the sequence).
+
+### The Operation
+
+- By applying `masked_fill`, all elements in `wei` that correspond to future tokens (relative to the position being predicted) are set to `-inf`. This effectively "masks" these positions because when `wei` is later passed through a softmax operation to calculate attention probabilities, the `-inf` values become zeros in the softmax output. This means that no attention will be paid to future tokens, as desired in causal or autoregressive models, where each prediction can only depend on previous tokens and not on any future tokens.
+
+### Why Use `-inf`?
+
+- Setting the masked positions to `-inf` is a practical way to ensure they have no effect after softmax is applied. Since `exp(-inf) = 0`, these positions contribute nothing to the weighted sum computed in the attention mechanism, achieving the goal of causal masking.
+
+### Conclusion
+
+The line `wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))` is a concise and effective way to enforce causal attention in transformer models, ensuring that the model predictions are based solely on available (past) information, which is particularly important for tasks like language modeling. This masking strategy is a key component of making transformer models capable of generating text sequentially in an autoregressive manner.
+
+Consider a scenario where you're processing a sequence of tokens, and you want to ensure that the attention mechanism for each token can only consider that token and the ones before it (i.e., the "history"), not any tokens that come after it ("future tokens"). The matrix you described can be thought of as an attention score matrix before masking is applied.
+
+Here's a clearer step-by-step explanation using a simplified example:
+
+### Initial Attention Scores (Hypothetical)
+Imagine an unmasked attention score matrix for a sequence with 6 tokens (for simplicity, using small integers instead of actual attention scores):
+```
+[1, 0, 0, 0, 0, 0]
+[2, 3, 0, 0, 0, 0]
+[4, 5, 6, 0, 0, 0]
+[7, 8, 9, 1, 0, 0]
+[2, 3, 4, 5, 6, 0]
+[1, 2, 3, 4, 5, 6]
+```
+In this matrix, each row represents the attention scores a token assigns to every other token, including itself and future tokens (which we actually want to mask out).
+
+### Lower Triangular Mask
+The lower triangular mask (including the diagonal) for a sequence of 6 tokens looks like this:
+```
+[1, 0, 0, 0, 0, 0]
+[1, 1, 0, 0, 0, 0]
+[1, 1, 1, 0, 0, 0]
+[1, 1, 1, 1, 0, 0]
+[1, 1, 1, 1, 1, 0]
+[1, 1, 1, 1, 1, 1]
+```
+This mask reflects that a token can attend to itself and any previous tokens but not to any future tokens.
+
+### Applying the Mask
+When we apply this mask to the attention scores, we replace all positions where the mask is 0 with `-inf` (or in practice, any operation that effectively zeros them out after softmax). For the given attention score matrix, applying the mask would concepturally "zero out" (or set to `-inf`) the future tokens, like so:
+```
+[1, -inf, -inf, -inf, -inf, -inf]
+[2,   3,  -inf, -inf, -inf, -inf]
+[4,   5,    6,  -inf, -inf, -inf]
+[7,   8,    9,    1,  -inf, -inf]
+[2,   3,    4,    5,    6, -inf]
+[1,   2,    3,    4,    5,   6]
+```
+Now, each token is only able to "see" itself and the tokens before it in the sequence, aligning with the causal (or autoregressive) nature of the model's intended behavior.
+
+### Conclusion
+The key idea here is to use a mask to enforce causality in the attention mechanism, ensuring that the model's prediction for a given token can only depend on known information (previous tokens) and not on future tokens that haven't been seen yet. This is essential for tasks like language modeling, where the model generates text sequentially.
+
+## What does this line do? wei = F.softmax(wei, dim=-1) # (B, T, T)
+
+The line `wei = F.softmax(wei, dim=-1)` applies the softmax function to the `wei` tensor along the last dimension (`dim=-1`). This operation is a key step in the attention mechanism of transformer models, and it serves to convert the raw attention scores into probabilities. Let's break down its components and purpose:
+
+### Understanding the Softmax Function
+
+- The **softmax function** is used in machine learning to convert a vector of real-valued scores (which can range from `-inf` to `+inf`) into a probability distribution. Each element of the output vector of the softmax function is in the range `(0, 1)`, and the elements sum up to `1`.
+- Applying softmax ensures that higher scores increase their proportion of the attention "budget" more than lower scores, effectively allowing the model to focus more on certain parts of the input.
+
+### Application to Attention Scores
+
+- In the context of the attention mechanism, `wei` contains the raw attention scores computed between tokens. These scores indicate how much each token should "attend to" every other token in the sequence.
+- By applying the softmax function to these scores, you transform them into attention probabilities. This means that for each token, you get a probability distribution over all tokens, indicating how much focus to place on each one.
+  
+### The `dim=-1` Parameter
+
+- The parameter `dim=-1` specifies that the softmax function should be applied along the last dimension of the `wei` tensor. In the context of attention scores with shape `[B, T, T]`:
+  - `B` is the batch size,
+  - `T` is the sequence length (the first `T` represents each token in the sequence, and the second `T` represents the attention scores relative to every other token).
+- Applying softmax along `dim=-1` means that for each token in each sequence in the batch, the attention scores across all tokens are converted into a probability distribution. Each row in the attention matrix (corresponding to a specific token's attention scores towards all tokens) sums up to `1`.
+
+### Purpose and Effect
+
+- This step is crucial for the model to dynamically allocate its focus across the sequence, emphasizing some tokens more than others based on the computed attention scores.
+- The resulting attention probabilities are used to weigh the values (the `v` tensor in other parts of the model) in the computation of the final attention output. This weighted sum produces a new representation of each token that incorporates information from other tokens according to the learned attention patterns.
+
+### Conclusion
+
+In summary, `wei = F.softmax(wei, dim=-1)` transforms the raw attention scores in `wei` into a set of attention probabilities for each token in the sequence, allowing the model to focus on the most relevant tokens when synthesizing information across the sequence. This is a foundational operation in the attention mechanism that enables the model to perform complex tasks involving understanding and generating sequences of data.
