@@ -339,3 +339,71 @@ To overcome the above-mentioned issues of longer training time and instability, 
 Normalization works by mapping all values of a feature to be in the range [0,1] using the transformation:
 
 ![alt text](norm.png)
+
+Suppose a particular input feature x has values in the range [x_min, x_max]. When x is equal to x_min, x_norm is equal to 0 and when x is equal to x_max, x_norm is equal to 1. So for all values of x between x_min and x_max, x_norm maps to a value between 0 and 1.
+
+Standardization, on the other hand, transforms the input values such that they follow a distribution with zero mean and unit variance. Mathematically, the transformation on the data points in a distribution with mean μ and standard deviation σ is given by:
+
+![alt text](standard.png)
+
+In practice, this process of standardization is also referred to as normalization (not to be confused with the normalization process discussed above). As part of the preprocessing step, you can add a layer that applies this transform to the input features so that they all have a similar distribution.
+
+#### Batch Normalization
+
+In the previous section, we learned how we can normalize the input to the neural network in order to speed up training. If you look at the neural network architecture, the input layer is not the only input layer. For a network with hidden layers, the output of layer k-1 serves as the input to layer k. If the inputs to a particular layer change drastically, we can again run into the problem of unstable gradients.
+
+When working with large datasets, you’ll split the dataset into multiple batches and run the mini-batch gradient descent. The mini-batch gradient descent algorithm optimizes the parameters of the neural network by batchwise processing of the dataset, one batch at a time.
+
+It’s also possible that the input distribution at a particular layer keeps changing across batches. The seminal paper titled Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift by Sergey Ioffe and Christian Szegedy refers to this change in distribution of the input to a particular layer across batches as internal covariate shift. For instance, if the distribution of data at the input of layer K keeps changing across batches, the network will take longer to train.
+
+But why does this hamper the training process?
+
+For each batch in the input dataset, the mini-batch gradient descent algorithm runs its updates. It updates the weights and biases (parameters) of the neural network so as to fit to the distribution seen at the input to the specific layer for the current batch.
+
+Now that the network has learned to fit to the current distribution, if the distribution changes substantially for the next batch, it now has to update the parameters to fit to the new distribution. This slows down the training process.
+
+However, if we transpose the idea of normalizing the inputs to the hidden layers in the network, we can potentially overcome the limitations imposed by exploding activations and fluctuating distributions at the layer’s input. Batch normalization helps us achieve this, one mini-batch at a time, to accelerate the training process.
+
+For any hidden layer h, we pass the inputs through a non-linear activation to get the output. For every neuron (activation) in a particular layer, we can force the pre-activations to have zero mean and unit standard deviation. This can be achieved by subtracting the mean from each of the input features across the mini-batch and dividing by the standard deviation.
+
+Following the output of the layer k-1, we can add a layer that performs this normalization operation across the mini-batch so that the pre-activations at layer k are unit Gaussians. The figure below illustrates this.
+
+![alt text](neural.png)
+
+As an example, let’s consider a mini-batch with 3 input samples, each input vector being four features long. Here’s a simple illustration of how the mean and standard deviation are computed in this case. Once we compute the mean and standard deviation, we can subtract the mean and divide by the standard deviation.
+
+![alt text](neural1.png)
+
+However, forcing all the pre-activations to be zero and unit standard deviation across all batches can be too restrictive. It may be the case that the fluctuant distributions are necessary for the network to learn certain classes better.
+
+To address this, batch normalization introduces two parameters: a scaling factor gamma (γ) and an offset beta (β). These are learnable parameters, so if the fluctuation in input distribution is necessary for the neural network to learn a certain class better, then the network learns the optimal values of gamma and beta for each mini-batch. The gamma and beta are learnable such that it’s possible to go back from the normalized pre-activations to the actual distributions that the pre-activations follow.
+
+Putting it all together, we have the following steps for batch normalization. If x(k) is the pre-activation corresponding to the k-th neuron in a layer, we denote it by x to simplify notation.
+
+![alt text](fluctuate.png)
+
+Here B is the number of samples.
+
+Two limitations of batch normalization can arise:
+
+- In batch normalization, we use the batch statistics: the mean and standard deviation corresponding to the current mini-batch. However, when the batch size is small, the sample mean and sample standard deviation are not representative enough of the actual distribution and the network cannot learn anything meaningful.
+
+- As batch normalization depends on batch statistics for normalization, it is less suited for sequence models. This is because, in sequence models, we may have sequences of potentially different lengths and smaller batch sizes corresponding to longer sequences.
+
+#### Back to Layer Normalization
+
+Layer Normalization was proposed by researchers Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E. Hinton. In layer normalization, all neurons in a particular layer effectively have the same distribution across all features for a given input.
+
+For example, if each input has d features, it’s a d-dimensional vector. If there are B elements in a batch, the normalization is done along the length of the d-dimensional vector and not across the batch of size B.
+
+Normalizing across all features but for each of the inputs to a specific layer removes the dependence on batches. This makes layer normalization well suited for sequence models such as transformers and recurrent neural networks (RNNs) that were popular in the pre-transformer era.
+
+Here’s an example showing the computation of the mean and variance for layer normalization. We consider the example of a mini-batch containing three input samples, each with four features.
+
+![alt text](layer.png)
+
+![alt text](fluctuate1.png)
+
+Here d is the number of features.
+
+From these steps, we see that they’re similar to the steps we had in batch normalization. However, instead of the batch statistics, we use the mean and variance corresponding to specific input to the neurons in a particular layer, say k. This is equivalent to normalizing the output vector from the layer k-1.
