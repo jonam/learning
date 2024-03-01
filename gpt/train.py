@@ -49,15 +49,15 @@ def get_batch(split):
     x, y = x.to(device), y.to(device)
     return x, y
 
-# This is a call to the model's forward method, implicitly 
-# triggered when the model instance is called like a function with 
-# inputs. The inputs here are X, which represents the input data or 
-# features to the model, and Y, which represents the target labels 
+# This is a call to the model's forward method, implicitly
+# triggered when the model instance is called like a function with
+# inputs. The inputs here are X, which represents the input data or
+# features to the model, and Y, which represents the target labels
 # or the ground truth that the model is trying to predict or approximate.
-# This typically refers to the raw output scores from the final 
-# layer of a neural network, before applying an activation function 
-# like softmax (for classification tasks). Logits represent the 
-# model's predictions in an unnormalized form, from which 
+# This typically refers to the raw output scores from the final
+# layer of a neural network, before applying an activation function
+# like softmax (for classification tasks). Logits represent the
+# model's predictions in an unnormalized form, from which
 # probabilities can be derived.
 @torch.no_grad()
 def estimate_loss():
@@ -226,4 +226,3 @@ for iter in range(max_iters):
 # generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 print(decode(m.generate(context, max_new_tokens=2000)[0].tolist()))
-
