@@ -51,10 +51,10 @@ Let's say this is my text, and also since each word is unique, the vocab_size wo
 ```
 # Update the vocabulary to include space and correct the vocab size
 vocab = {
-    ' ': 0, 'Q': 1, 'u': 2, 'i': 3, 'c': 4, 'k': 5, 
-    'b': 6, 'r': 7, 'o': 8, 'w': 9, 'n': 10, 
-    'f': 11, 'x': 12, 'j': 13, 'm': 14, 'p': 15, 
-    'e': 16, 'd': 17, 'v': 18, 't': 19, 'h': 20, 
+    ' ': 0, 'Q': 1, 'u': 2, 'i': 3, 'c': 4, 'k': 5,
+    'b': 6, 'r': 7, 'o': 8, 'w': 9, 'n': 10,
+    'f': 11, 'x': 12, 'j': 13, 'm': 14, 'p': 15,
+    'e': 16, 'd': 17, 'v': 18, 't': 19, 'h': 20,
     'l': 21, 'a': 22, 'z': 23, 'y': 24, 'g': 25, '.': 26}
 
 vocab_size = len(vocab)  # Updated unique characters including space and period
@@ -144,7 +144,7 @@ Assuming a very simplistic scenario and focusing only on the first two component
 
 - After 1 epoch (a full pass through the training data), suppose the gradients indicate an increase in the first component and a decrease in the second. The updated vector might look like:
   \[ [0.1300, -0.4800, ..., ..., ...] \]
-  
+
 - After several epochs, as the model learns, the embedding vector for "K" continues to evolve, capturing more meaningful features that contribute to the model's task. The vector might evolve to something like:
   \[ [0.2500, -0.5000, 1.2000, -1.3000, -1.4000] \]
 
@@ -220,7 +220,7 @@ When we design a model, we choose a specific architecture (e.g., neural networks
 
 The "discovery" of patterns by the model is a byproduct of the interaction between the model's architecture, the optimization process, and the data itself. While the overall framework is designed by humans, the specific patterns learned are determined by the data and the model's objective. This process allows machine learning models to adapt to a wide range of tasks and datasets, often learning representations that are difficult for humans to design manually.
 
-But if we had provided n_embd = 6 instead of 5, then somehow the model will create a new coordinate in 6 dimensional space and adjust it's location in each epoch by using loss function and backpropagation. 
+But if we had provided n_embd = 6 instead of 5, then somehow the model will create a new coordinate in 6 dimensional space and adjust it's location in each epoch by using loss function and backpropagation.
 
 So having 6 dimensions instead of 5 would allow a more accurate representation  of the point wrt other points in 6 dimensions. Is that right?
 
@@ -276,7 +276,7 @@ Attention scores and embeddings both play critical roles during both training an
 ### During Training
 
 - **Embeddings:** The initial step in processing input data involves converting tokens (e.g., words in a sentence) into vectors using embeddings. These embeddings are trainable parameters and are adjusted during the training process to capture semantic and positional information effectively. Token embeddings capture the meaning of individual tokens, while position embeddings capture information about the sequence position of each token. The combined embeddings are fed into subsequent layers of the model.
-  
+
 - **Attention Scores:** Within the transformer's attention mechanisms, attention scores are computed based on these embeddings. The scores determine how much focus the model should put on each part of the input when generating a particular output. These scores are calculated, during training and inference, and in training, allowing the model to learn which parts of the input are relevant to each other. The process involves using the current state of embeddings and the trainable parameters within the attention mechanism.
 
 ### During Inference
@@ -321,7 +321,7 @@ Layer normalization is a technique used in deep learning to improve the stabilit
 ### Benefits of Layer Normalization
 
 - **Consistency Across Training:** It reduces the sensitivity of the network to the scale of parameters and the initialization scheme. This consistency can lead to more stable training across different architectures and datasets.
-  
+
 - **Independence from Batch Size:** Since layer normalization computes statistics within each example rather than across the batch, it's not affected by the batch size. This makes it particularly useful in situations where large batch sizes are not feasible or in models like transformers where the sequence length can vary significantly.
 
 - **Improved Training Efficiency:** By stabilizing the hidden state dynamics, layer normalization can help the network learn more efficiently, often leading to faster convergence and better overall performance on a variety of tasks.

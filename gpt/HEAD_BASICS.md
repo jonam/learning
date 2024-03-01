@@ -295,23 +295,23 @@ The total number of parameters calculated, based on the sizes of the weight and 
 ```
 Token and Position Embedding Tables
 
-token_embedding_table.weight [65, 64]: 
+token_embedding_table.weight [65, 64]:
 
-position_embedding_table.weight [8, 64]: 
+position_embedding_table.weight [8, 64]:
 
 Self-Attention Heads for One Block (noting the pattern repeats for each head and each block)
 
 Projection Layer for One Block
 
-blocks.0.sa.proj.weight [64, 64]: 
+blocks.0.sa.proj.weight [64, 64]:
 
-blocks.0.sa.proj.bias [64]: 
+blocks.0.sa.proj.bias [64]:
 
 Feedforward Network for One Block
 
-First layer weight and bias: 
+First layer weight and bias:
 
-Second layer weight and bias: 
+Second layer weight and bias:
 
 Layer Normalization for One Block
 ```
@@ -471,7 +471,7 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(dropout)
 ```
 
-As per this code, the self.key and self.query both should be identical. 
+As per this code, the self.key and self.query both should be identical.
 
  self.key = nn.Linear(n_embd, head_size, bias=False)
  self.query = nn.Linear(n_embd, head_size, bias=False)
@@ -507,7 +507,7 @@ This is happening in forward method. What does this mean?
 ```
 B,T,C = x.shape
 k = self.key(x)   # (B,T,C)
-q = self.query(x) # (B,T,C) 
+q = self.query(x) # (B,T,C)
 ```
 
 As far as I know self.key and self.query are tensors. Why are we passing a parameter x to it?
@@ -710,7 +710,7 @@ Let's clarify the process: the operations in the code snippet we provided don't 
 
 The differentiation in how `self.key`, `self.query`, and `self.value` contribute to the model's output leads to different patterns of gradients during training. These gradients guide the optimization process, resulting in the layers specializing based on their function within the attention mechanism. It's this cycle of forward pass, loss computation, backpropagation, and weight update that leads to the divergence in the roles and effects of the `key`, `query`, and `value` transformations, despite their similar starting points.
 
-## I agree that the back propagation would result in the weights being computed differently for key and query. But I do not see any code that actually treats self.key like key and self.query like query. I was hoping there would be some concept like a "type" like key type or query type, but I do not see that. 
+## I agree that the back propagation would result in the weights being computed differently for key and query. But I do not see any code that actually treats self.key like key and self.query like query. I was hoping there would be some concept like a "type" like key type or query type, but I do not see that.
 
 The differentiation between `self.key`, `self.query`, and `self.value` in the attention mechanism doesn't come from any intrinsic property or type associated with these layers themselves. Instead, it arises from how their outputs are used in the computation of attention scores and the subsequent aggregation of values.
 
@@ -719,7 +719,7 @@ Here's a more detailed look at the process:
 ### Defining Roles through Usage
 
 - **`self.key(x)` and `self.query(x)`**:
-  - The output of `self.key` is treated as the set of "key" vectors (denoted as `k`), and the output of `self.query` is treated as the set of "query" vectors (denoted as `q`). 
+  - The output of `self.key` is treated as the set of "key" vectors (denoted as `k`), and the output of `self.query` is treated as the set of "query" vectors (denoted as `q`).
   - The attention scores are computed by taking the dot product between each query and all keys, which is done in the expression `q @ k.transpose(-2, -1)`. This operation effectively measures the similarity between each query and all keys, resulting in a matrix of attention scores.
 
 - **Attention Scores**:
@@ -746,7 +746,7 @@ I think this is the only operation that is non-symmetric or provides different t
 q @ k.transpose(-2, -1) * C**-0.5
 ```
 
-As we could have interchanged it here as 
+As we could have interchanged it here as
 
 ```
 k @ q.transpose(-2,-1) * C**-0.5
@@ -770,7 +770,7 @@ Yes, we're correct in identifying the operation `q @ k.transpose(-2, -1) * C**-0
 The attention scores are calculated by taking the dot product of the query vectors with the key vectors. This operation is inherently asymmetric because of the distinct roles assigned to queries and keys:
 
 - **Queries (`q`)** are used to probe or search the sequence for relevant information. Each query corresponds to a specific position in the sequence, asking, "Which parts of the input should I pay attention to?"
-  
+
 - **Keys (`k`)** are used to represent each position in the sequence in a way that answers the queries. Each key says, "Here's how relevant I am to what you're looking for."
 
 The expression `q @ k.transpose(-2, -1)` specifically computes the dot product between each query and all keys, producing a matrix of scores that represent the relevance of every part of the sequence (as represented by keys) to each query.
@@ -787,7 +787,7 @@ You correctly noted that swapping `q` and `k` in the operation (to `k @ q.transp
 
 The calculation `q @ k.transpose(-2, -1) * C**-0.5` indeed embodies the attention mechanism's core, where the non-symmetric nature of the computation reflects and enforces the distinct roles of queries and keys. This differentiation is essential for the model to learn how to allocate attention dynamically across the sequence, based on the content and context represented by the queries and keys. The entire architecture of the transformer, including how queries, keys, and values are computed and used, is designed to leverage this capability, enabling powerful sequence modeling and understanding.
 
-## Now B, T, C stands for Batch, Time and Channel in above code. 
+## Now B, T, C stands for Batch, Time and Channel in above code.
 I understand what is batch. But what is time? I did not see any concept of time.
 Also, what is channel?
 
@@ -865,7 +865,7 @@ Word embedding models, such as Word2Vec, GloVe, or fastText, often learn to capt
 
 ### Learning Process
 
-1. **Context Prediction (Word2Vec)**: The Word2Vec model can be trained using one of two approaches: Continuous Bag of Words (CBOW) or Skip-Gram. 
+1. **Context Prediction (Word2Vec)**: The Word2Vec model can be trained using one of two approaches: Continuous Bag of Words (CBOW) or Skip-Gram.
    - **CBOW** predicts a target word from a window of surrounding context words.
    - **Skip-Gram** predicts surrounding context words given a target word.
    - These training objectives encourage the model to learn embeddings that capture the predictive relationships between words, effectively learning synonyms and thematic similarities because words used in similar contexts tend to have similar meanings.
@@ -1048,7 +1048,7 @@ The line `wei = F.softmax(wei, dim=-1)` applies the softmax function to the `wei
 
 - In the context of the attention mechanism, `wei` contains the raw attention scores computed between tokens. These scores indicate how much each token should "attend to" every other token in the sequence.
 - By applying the softmax function to these scores, you transform them into attention probabilities. This means that for each token, you get a probability distribution over all tokens, indicating how much focus to place on each one.
-  
+
 ### The `dim=-1` Parameter
 
 - The parameter `dim=-1` specifies that the softmax function should be applied along the last dimension of the `wei` tensor. In the context of attention scores with shape `[B, T, T]`:

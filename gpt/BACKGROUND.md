@@ -147,7 +147,7 @@ y = torch.stack([data[i+1:i+block_size+1] for i in ix])
 - `ix`: An iterable of indices indicating the starting points for each block to extract from `data`.
 
 #### For `x`:
-- `[data[i:i+block_size] for i in ix]` generates a list of tensors. Each tensor is a slice of `data` starting from index `i` and spanning `block_size` elements. 
+- `[data[i:i+block_size] for i in ix]` generates a list of tensors. Each tensor is a slice of `data` starting from index `i` and spanning `block_size` elements.
 - `torch.stack([...])` takes this list of tensors and stacks them along a new dimension (by default, dimension 0). This means if each slice `data[i:i+block_size]` has a shape of `[block_size, ...]` (assuming `data` is at least 2D), then `x` will have a shape of `[len(ix), block_size, ...]`, where `len(ix)` is the number of slices.
 
 #### For `y`:
@@ -179,7 +179,7 @@ The development of 1.58-bit LLMs signifies a breakthrough in the scalability and
 
 In summary, the era of 1-bit and 1.58-bit LLMs introduces a new scaling law and training recipe for creating high-performance, cost-effective large language models, marking a significant shift in how these models can be developed and utilized across various applications.
 
-The concept of "1.58 bits" as an average or minimum number of bits needed to encode a set of three values efficiently can be understood through the lens of information theory, particularly using the concept of entropy. Entropy, in this context, measures the average amount of information produced by a stochastic source of data. 
+The concept of "1.58 bits" as an average or minimum number of bits needed to encode a set of three values efficiently can be understood through the lens of information theory, particularly using the concept of entropy. Entropy, in this context, measures the average amount of information produced by a stochastic source of data.
 
 For a simple understanding, consider a scenario where you have a set of three equally likely values. The question is: How many bits on average are needed to represent each value?
 
@@ -570,7 +570,7 @@ Embeddings are a way to convert categorical data, such as words from a vocabular
 ### Why Use Embeddings?
 
 1. **Dimensionality Reduction**: Embeddings compress high-dimensional data (e.g., a vocabulary of thousands of words) into a more manageable size (e.g., vectors of 100 floating-point numbers). This reduction makes computational processes more efficient.
-   
+
 2. **Semantic Meaning**: Unlike one-hot encoding, which treats each word as isolated with no relation to others, embeddings aim to place semantically similar words close together in the vector space. This similarity can be based on meaning, context, or usage.
 
 ### How are Embeddings Generated?

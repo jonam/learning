@@ -1,4 +1,4 @@
-# FORWARD 
+# FORWARD
 
 ## Explain the forward method
 
@@ -37,7 +37,7 @@ The `forward` method in a BigramLanguageModel or any language model class using 
    - This line looks up embeddings for each token index in `idx` from a token embedding table (`self.token_embedding_table`). The resulting tensor `tok_emb` has shape `(B, T, C)`, where `C` is the embedding dimensionality.
 
 4. **`pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T,C)`**
-   - This line generates a sequence of position indices using `torch.arange(T)`, retrieves position embeddings for these indices from `self.position_embedding_table`, and ensures the operation is performed on the correct device. The resulting `pos_emb` tensor has shape `(T, C)` and represents position embeddings that add positional information to token embeddings. 
+   - This line generates a sequence of position indices using `torch.arange(T)`, retrieves position embeddings for these indices from `self.position_embedding_table`, and ensures the operation is performed on the correct device. The resulting `pos_emb` tensor has shape `(T, C)` and represents position embeddings that add positional information to token embeddings.
 
 torch.arange(T, device=device) creates a tensor with a range of integers from 0 to T-1, where T is the sequence length. This tensor is then used to index into a position embedding table to retrieve position embeddings. The device=device argument ensures that the tensor is created on the same hardware device (CPU, GPU, etc.) as the model, to avoid errors and inefficiencies related to data transfer between devices.
 
